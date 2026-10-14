@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hot water timer: how to use it</title>
+<meta name="description" content="Unofficial quick guide to the Sangamo PSS2 hot water timer in this property.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #F6F7F9;
+  --surface: #FFFFFF;
+  --ink: #1C2230;
+  --muted: #545C6B;
+  --rule: #D6DAE2;
+  --accent: #2F4BD0;
+  --lcd-bg: #22287A;
+  --lcd-on: #E6EBFF;
+  --lcd-off: rgba(230, 235, 255, 0.17);
+  --lcd-flash: #9FE7FF;
+  --note-bg: #FFF3E0;
+  --note-ink: #6B3500;
+  --note-rule: #E8A54F;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11151D;
+    --surface: #181D27;
+    --ink: #E8EBF1;
+    --muted: #A9B0BE;
+    --rule: #2C3442;
+    --accent: #93A6FF;
+    --note-bg: #2A2013;
+    --note-ink: #FFD9A6;
+    --note-rule: #9A6424;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 1rem; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+}
+main { max-width: 40rem; margin: 0 auto; padding: 1.5rem 1.15rem 3rem; }
+h1 { font-size: 2rem; line-height: 1.15; margin: 0.5rem 0 0.25rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.45rem; line-height: 1.25; margin: 2.75rem 0 0.75rem; padding-top: 1.25rem; border-top: 2px solid var(--rule); }
+p { margin: 0 0 1rem; }
+a { color: var(--accent); text-underline-offset: 0.18em; }
+a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+b, strong { font-weight: 700; }
+.version { color: var(--muted); font-size: 1rem; margin-bottom: 1.25rem; }
+.note {
+  background: var(--note-bg); color: var(--note-ink);
+  border-left: 5px solid var(--note-rule);
+  padding: 0.9rem 1rem; border-radius: 6px; margin: 0 0 1.75rem;
+}
+.note p:last-child { margin-bottom: 0; }
+.note a { color: inherit; }
+nav ol { padding-left: 1.6rem; margin: 0.5rem 0 0; }
+nav li { margin: 0.45rem 0; }
+nav h2 { border: 0; margin-top: 0; padding-top: 0; font-size: 1.15rem; }
+.photo { display: block; width: min(60%, 240px); height: auto; margin: 0.5rem 0 1.25rem; border-radius: 6px; }
+figure { margin: 1rem 0 1.5rem; }
+figcaption { color: var(--muted); font-size: 1rem; margin-top: 0.4rem; }
+.panels { display: flex; flex-wrap: wrap; gap: 1rem; }
+.panel { flex: 1 1 15rem; width: 100%; max-width: 20rem; height: auto; color: var(--ink); font-family: inherit; }
+.panel text { fill: currentColor; }
+.accent-stroke { stroke: var(--accent); }
+.accent-fill { fill: var(--accent); }
+.table-wrap { overflow-x: auto; margin: 0 0 1.25rem; }
+table { border-collapse: collapse; width: 100%; font-size: 1.05rem; background: var(--surface); }
+td:first-child { white-space: nowrap; }
+th, td { text-align: left; vertical-align: top; padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--rule); }
+th { font-weight: 700; border-bottom-width: 2px; }
+ol.plain { padding-left: 1.6rem; }
+ol.plain li { margin: 0.45rem 0; }
+.top { display: inline-block; margin-top: 0.5rem; font-size: 1rem; }
+
+/* The timer display, drawn with real text so it can be read aloud and zoomed */
+.lcd {
+  background: var(--lcd-bg); color: var(--lcd-on);
+  border-radius: 10px; padding: 0.55rem 0.8rem 0.45rem;
+  font-variant-numeric: tabular-nums; width: 100%; max-width: 19rem;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+.lcd-days { display: flex; justify-content: space-between; font-size: 0.72rem; letter-spacing: 0.02em; }
+.lcd .off { color: var(--lcd-off); }
+.lcd-main { display: grid; grid-template-columns: 2.4rem 1fr 1.6rem; align-items: center; margin-top: 0.15rem; }
+.lcd-mode { display: flex; flex-direction: column; font-size: 0.72rem; font-weight: 700; line-height: 1.2; }
+.lcd-time { font-size: 2.3rem; line-height: 1.1; text-align: center; letter-spacing: 0.04em; white-space: pre; }
+.lcd-time .colon { padding: 0 0.1em; }
+.lcd-eg { font-size: 1.2rem; text-align: right; }
+.lcd-grp { text-align: center; font-size: 0.9rem; font-weight: 700; min-height: 1.3em; }
+.lcd .flash { color: var(--lcd-flash); text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 0.12em; animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .lcd .flash { animation: none; } }
+.lcd-small .lcd-time { font-size: 1.9rem; }
+
+ol.steps { list-style: none; counter-reset: step; padding: 0; margin: 1rem 0 1.5rem; }
+ol.steps > li { counter-increment: step; display: grid; gap: 0.6rem; padding: 1rem 0; border-bottom: 1px solid var(--rule); }
+ol.steps > li > p { margin: 0; position: relative; padding-left: 2.4rem; }
+ol.steps > li > p::before {
+  content: counter(step); position: absolute; left: 0; top: 0.05rem;
+  width: 1.75rem; height: 1.75rem; border-radius: 50%;
+  background: var(--accent); color: var(--surface);
+  font-weight: 700; font-size: 0.95rem; display: grid; place-items: center;
+}
+ol.steps > li > .lcd { margin-left: 2.4rem; max-width: 17rem; }
+@media (min-width: 42rem) {
+  ol.steps > li { grid-template-columns: 1fr 17rem; align-items: center; gap: 1.25rem; }
+  ol.steps > li > .lcd { margin-left: 0; }
+}
+.legend { color: var(--muted); font-size: 1rem; }
+.progs { display: grid; gap: 1.1rem; margin: 1rem 0 1.5rem; }
+@media (min-width: 42rem) { .progs { grid-template-columns: repeat(3, 1fr); } }
+.prog { margin: 0; }
+.prog figcaption { color: var(--ink); }
+@media print {
+  .top, nav { display: none; }
+  .lcd .flash { animation: none; }
+  body { background: #fff; }
+}
+</style>
+</head>
+<body>
+<main>
+<header id="top">
+<h1>Hot water timer: how to use it</h1>
+<p class="version">Sangamo PSS2. Version 2026-10-14.05</p>
+<aside class="note" aria-label="Important note">
+<p><b>Note:</b> This is an unofficial quick guide to the Sangamo PSS2 timer in this property, put together from the <a href="https://ydrol.github.io/bn2-manuals/Timer_Sangamo_PSS2_Installation_Manual.pdf">manufacturer's manual</a> and a demonstration video, with help from an AI tool.</p>
+<p>If the timer does not behave as described, <b>stop immediately and contact the landlord</b>. Do not try/push other buttons, open the timer or remove any screws.</p>
+</aside>
+</header>
+
+<nav aria-labelledby="contents-h">
+<h2 id="contents-h">Contents</h2>
+<ol>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#what-times">What times is it set to?</a></li>
+<li><a href="#program">Check the daily program (same every day, weekday/weekend or each day separately)</a></li>
+<li><a href="#change-times">To change the program on/off times</a></li>
+<li><a href="#boost">The water is cold and you need it now</a></li>
+<li><a href="#switch-off">The heater is on a scheduled time but you want to switch it off just this once</a></li>
+<li><a href="#away">Going away</a></li>
+<li><a href="#clocks">Changing the clocks for spring (forward) or winter (back)</a></li>
+<li><a href="#problems">Something's not working</a></li>
+</ol>
+</nav>
+
+<section aria-labelledby="getting-started">
+<h2 id="getting-started">Getting started</h2>
+<img class="photo" src="data:image/jpeg;base64,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" alt="The Sangamo PSS2 timer with the front panel closed: a white wall plate with a blue clock display above a large square button." width="240" height="238">
+<p>The timer <b>controls when the water heats</b>, so setting it to suit your schedule and requirements is the priority function of this guide. Using the timer also helps you to <b>manage your electricity usage</b>.</p>
+<p>The tank needs <b>around two hours to heat fully from cold</b>, so set each time to start about two hours before you usually need hot water, for example set timer for 6am for morning showers required around 8am.</p>
+<p>Once heated, the tank stays hot for several hours, so there is no need to leave the heater on all day. <b>Heat the water two hours before you first need it</b>, and switch off for longer periods when it is not needed (e.g. when at work).</p>
+<p>If you need extra hot water outside the set times, press the large square button on the front, which is <b>BOOST</b>. <b>It is not instant</b>: the tank still needs time to heat.</p>
+<p>To view or set the timer, use the small buttons behind the front panel.</p>
+<p>To open the panel, hook a fingernail under its top edge and pull it towards you and down. It hinges at the bottom and hangs open, and the display stays on the unit. Do not touch the two screws either side of the buttons, and do not lever at the bottom of the outer white plate, because that is where the electrician's wiring is.</p>
+<figure>
+<div class="panels">
+<svg class="panel" viewBox="0 0 240 280" role="img" aria-labelledby="pc-t pc-d">
+<title id="pc-t">The timer with the front panel closed</title>
+<desc id="pc-d">The large square button is BOOST. To open the panel, pull its top edge towards you and down.</desc>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="accent-fill"/></marker></defs>
+<g fill="none" stroke="currentColor" stroke-width="1.5">
+<rect x="10" y="40" width="200" height="200" rx="10"/>
+<rect x="34" y="60" width="152" height="160" rx="8"/>
+<rect x="60" y="72" width="100" height="34" rx="4"/>
+<rect x="75" y="140" width="70" height="60" rx="4"/>
+</g>
+<line x1="85" y1="60" x2="135" y2="60" class="accent-stroke" stroke-width="5"/>
+<path d="M110 26 V52" class="accent-stroke" stroke-width="2" marker-end="url(#ah)"/>
+<path d="M198 76 Q234 140 198 204" fill="none" class="accent-stroke" stroke-width="2" marker-end="url(#ah)"/>
+<text x="110" y="18" text-anchor="middle" font-size="16">Pull here</text>
+<text x="110" y="95" text-anchor="middle" font-size="15">Display</text>
+<text x="110" y="176" text-anchor="middle" font-size="16" font-weight="700">BOOST</text>
+<text x="110" y="268" text-anchor="middle" font-size="16">Closed</text>
+</svg>
+<svg class="panel" viewBox="0 0 240 280" role="img" aria-labelledby="po-t po-d">
+<title id="po-t">The timer with the front panel open</title>
+<desc id="po-d">Two buttons are stacked in the middle, OFF/ON above BOOST, with minus, SET and plus in a row below. The front panel hangs down from a hinge along its bottom edge.</desc>
+<g fill="none" stroke="currentColor" stroke-width="1.5">
+<rect x="10" y="10" width="220" height="160" rx="10"/>
+<rect x="70" y="22" width="100" height="30" rx="4"/>
+<rect x="10" y="176" width="220" height="70" rx="10" stroke-dasharray="5 4"/>
+</g>
+<g font-size="14" text-anchor="middle">
+<text x="120" y="42">Display</text>
+<rect x="85" y="60" width="70" height="24" rx="12" fill="none" stroke="currentColor"/><text x="120" y="77">OFF/ON</text>
+<rect x="85" y="90" width="70" height="24" rx="12" fill="none" stroke="currentColor"/><text x="120" y="107">BOOST</text>
+<rect x="32" y="124" width="56" height="28" rx="14" class="accent-stroke" fill="none" stroke-width="2"/><text x="60" y="143" font-weight="700" font-size="16">−</text>
+<rect x="92" y="124" width="56" height="28" rx="14" class="accent-stroke" fill="none" stroke-width="2"/><text x="120" y="143" font-weight="700" font-size="16">SET</text>
+<rect x="152" y="124" width="56" height="28" rx="14" class="accent-stroke" fill="none" stroke-width="2"/><text x="180" y="143" font-weight="700" font-size="16">+</text>
+<text x="120" y="216">Front panel, hanging open</text>
+</g>
+<line x1="10" y1="173" x2="230" y2="173" class="accent-stroke" stroke-width="3"/>
+<text x="120" y="270" text-anchor="middle" font-size="16">Open</text>
+</svg>
+</div>
+<figcaption>Timer closed and with the front panel open</figcaption>
+</figure>
+<p>With the panel open, you will see two buttons in the middle and a row of three below them.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Button</th><th scope="col">What it does</th></tr></thead>
+<tbody>
+<tr><td><b>OFF/ON</b></td><td>Pauses the timer while you are away</td></tr>
+<tr><td><b>BOOST</b></td><td>Extra hot water now (same as the large front button)</td></tr>
+<tr><td><b>&minus;</b> (minus)</td><td>Lowers the flashing number</td></tr>
+<tr><td><b>SET</b></td><td>Moves to the next setting; press and hold to save and exit</td></tr>
+<tr><td><b>+</b> (plus)</td><td>Raises the flashing number</td></tr>
+</tbody>
+</table></div>
+<p>Use the 24-hour clock to set times, e.g. 15.00 for 3pm and 17.00 for 5pm. Holding &minus; or + changes the number quickly.</p>
+<a class="top" href="#top">Back to contents</a>
+</section>
+
+<section aria-labelledby="what-times">
+<h2 id="what-times">What times is it set to?</h2>
+<p>You can look through the saved times without changing anything, as long as you only press SET and never touch &minus; or +.</p>
+<ol class="plain">
+<li>Open the front panel.</li>
+<li>Press SET (short presses) until the display shows <b>01</b> and <b>ON</b> beside a time. On the way it passes through the clock settings; SET alone leaves them unchanged.</li>
+<li>Write down the time shown. That is when the heater first comes on.</li>
+<li>Keep pressing SET. The display moves to <b>01 OFF</b> (first off time), then <b>02 ON</b>, <b>02 OFF</b>, and so on. Each time takes two presses, one for the hours and one for the minutes.</li>
+<li>When a period shows <b>--:00</b>, nothing more is set and you have seen the whole schedule.</li>
+<li>Press and hold SET until the normal clock display returns.</li>
+</ol>
+<p>If you are not sure whether weekdays and weekends have separate times, the next section shows how to tell.</p>
+<a class="top" href="#top">Back to contents</a>
+</section>
+
+<section aria-labelledby="program">
+<h2 id="program">Check the daily program (same every day, weekday/weekend or each day separately)</h2>
+<p>The timer runs on one of three programs, which the electrician chose when it was installed. You can check which one without changing anything.</p>
+<ol class="plain">
+<li>Open the front panel.</li>
+<li>Press SET (short presses) until the display shows <b>01</b> and <b>ON</b>.</li>
+<li>Look at which day names are lit along the top, and compare them with the pictures below.</li>
+<li>Press and hold SET to go back to the normal display. As long as you have not pressed &minus; or +, nothing has changed.</li>
+</ol>
+<div class="progs">
+<figure class="prog"><div class="lcd lcd-small" role="img" aria-label="Display: all seven days lit, ON showing, time 06:00, period 01."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="">06</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">01</div></div><figcaption><b>Program 1: same every day</b><br>All seven day names lit</figcaption></figure>
+<figure class="prog"><div class="lcd lcd-small" role="img" aria-label="Display: Monday to Friday lit, ON showing, time 06:00, period 01."><div class="lcd-days" aria-hidden="true"><span class="off">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="off">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="">06</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">01</div></div><figcaption><b>Program 2: weekdays and weekend</b><br>Monday to Friday lit; the weekend comes later</figcaption></figure>
+<figure class="prog"><div class="lcd lcd-small" role="img" aria-label="Display: Monday lit, ON showing, time 06:00, period 01."><div class="lcd-days" aria-hidden="true"><span class="off">SUN</span><span class="on">MON</span><span class="off">TUE</span><span class="off">WED</span><span class="off">THU</span><span class="off">FRI</span><span class="off">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="">06</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">01</div></div><figcaption><b>Program 3: each day separately</b><br>One day lit, such as Monday</figcaption></figure>
+</div>
+<p>Only the landlord can change the program as it requires resetting and setting up the timer again. If you have different requirements such as separate times at weekends, inform the landlord which program it is currently on and what you would prefer.</p>
+<a class="top" href="#top">Back to contents</a>
+</section>
+
+<section aria-labelledby="change-times">
+<h2 id="change-times">To change the program on/off times</h2>
+<p>As stated earlier, the water takes <b>about two hours</b> to heat from cold, and once heated stays hot for several hours.</p>
+<p>You can set <b>up to 10 heating periods a day</b>, so you do not need one continuous &lsquo;on&rsquo; time. A few shorter periods, each starting about two hours before you usually need hot water (for example before morning showers and before the evening), will give you hot water when you want it while <b>keeping your electricity usage down</b>.</p>
+<p>This example sets hot water from 6am to 8:30am and from 15.00 to 17.00 (3pm to 5pm), every day. Whatever is flashing is what &minus; and + will change, and SET moves you on to the next thing.</p>
+<p class="legend">Each step shows what the display should look like. The flashing part is underlined.</p>
+<ol class="steps">
+<li class="step"><p>Open the panel. Press <b>SET</b> (short presses) until the display shows <b>01</b> and <b>ON</b>. The hours flash (an old time may show instead of --).</p><div class="lcd" role="img" aria-label="Display: all seven days lit, ON showing, time dash dash:00, period 01, hours flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="flash">--</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">01</div></div></li>
+<li class="step"><p>Hours: press <b>−</b> or <b>+</b> until they show <b>06</b>, then press <b>SET</b>.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, ON showing, time 06:00, period 01, hours flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="flash">06</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">01</div></div></li>
+<li class="step"><p>The minutes flash. Press <b>−</b> or <b>+</b> until <b>00</b>, then press <b>SET</b>.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, ON showing, time 06:00, period 01, minutes flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="">06</span><span class="colon">:</span><span class="flash">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">01</div></div></li>
+<li class="step"><p>The display moves to <b>01 OFF</b>. Hours: press <b>−</b> or <b>+</b> until <b>08</b>, then press <b>SET</b>.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, OFF showing, time 08:00, period 01, hours flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="off">ON</span><span class="on">OFF</span></span><span class="lcd-time"><span class="flash">08</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">01</div></div></li>
+<li class="step"><p>Minutes: press <b>−</b> or <b>+</b> until <b>30</b>, then press <b>SET</b>.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, OFF showing, time 08:30, period 01, minutes flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="off">ON</span><span class="on">OFF</span></span><span class="lcd-time"><span class="">08</span><span class="colon">:</span><span class="flash">30</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">01</div></div></li>
+<li class="step"><p>The display moves to <b>02 ON</b>. Hours: <b>15</b>, then press <b>SET</b>.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, ON showing, time 15:00, period 02, hours flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="flash">15</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">02</div></div></li>
+<li class="step"><p>Minutes: <b>00</b>, then press <b>SET</b>.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, ON showing, time 15:00, period 02, minutes flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="">15</span><span class="colon">:</span><span class="flash">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">02</div></div></li>
+<li class="step"><p>The display moves to <b>02 OFF</b>. Hours: <b>17</b>, then press <b>SET</b>.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, OFF showing, time 17:00, period 02, hours flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="off">ON</span><span class="on">OFF</span></span><span class="lcd-time"><span class="flash">17</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">02</div></div></li>
+<li class="step"><p>Minutes: <b>00</b>, then press <b>SET</b>.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, OFF showing, time 17:00, period 02, minutes flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="off">ON</span><span class="on">OFF</span></span><span class="lcd-time"><span class="">17</span><span class="colon">:</span><span class="flash">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">02</div></div></li>
+<li class="step"><p>The display moves to <b>03 ON</b> and should show <b>--:00</b>. If it shows a time, press <b>−</b> on the hours until <b>--</b> appears.</p><div class="lcd" role="img" aria-label="Display: all seven days lit, ON showing, time dash dash:00, period 03, hours flashing."><div class="lcd-days" aria-hidden="true"><span class="on">SUN</span><span class="on">MON</span><span class="on">TUE</span><span class="on">WED</span><span class="on">THU</span><span class="on">FRI</span><span class="on">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="on">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="flash">--</span><span class="colon">:</span><span class="">00</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true">03</div></div></li>
+<li class="step"><p>Press and hold <b>SET</b> until the normal clock returns. Your new times are saved.</p><div class="lcd" role="img" aria-label="Display: Wednesday lit, time 15:36."><div class="lcd-days" aria-hidden="true"><span class="off">SUN</span><span class="off">MON</span><span class="off">TUE</span><span class="on">WED</span><span class="off">THU</span><span class="off">FRI</span><span class="off">SAT</span></div><div class="lcd-main" aria-hidden="true"><span class="lcd-mode"><span class="off">ON</span><span class="off">OFF</span></span><span class="lcd-time"><span class="">15</span><span class="colon">:</span><span class="">36</span></span><span class="lcd-eg"></span></div><div class="lcd-grp" aria-hidden="true"></div></div></li>
+</ol>
+<p>Times must go in order through the day, so period 1 has to be earlier than period 2. If the display shows an error, press SET and enter that period again; the other periods are kept.</p>
+<p>If weekdays and weekends have separate times (see the previous section), do not hold SET after step 10. Keep pressing SET until Saturday and Sunday light up, enter the same times again for the weekend, and then hold SET to save.</p>
+<a class="top" href="#top">Back to contents</a>
+</section>
+
+<section aria-labelledby="boost">
+<h2 id="boost">The water is cold and you need it now</h2>
+<p>BOOST will start heating the water immediately, but it <b>may not be hot straight away</b>. The tank takes <b>about two hours</b> to heat fully from cold, and you will get some warm water sooner.</p>
+<p>Press the large square button on the front to BOOST. You do not need to open the panel, and the button still works when the keypad is locked.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Press BOOST</th><th scope="col">Display shows</th><th scope="col">Heater runs for</th></tr></thead>
+<tbody>
+<tr><td>Once</td><td>0:30</td><td>30 minutes</td></tr>
+<tr><td>Twice</td><td>1:00</td><td>1 hour</td></tr>
+<tr><td>Three times</td><td>2:00</td><td>2 hours</td></tr>
+<tr><td>Four times</td><td>0:00</td><td>Boost cancelled</td></tr>
+</tbody>
+</table></div>
+<p>Ideally, <b>set the timer so the water is already hot whenever you usually need it</b>, rather than waiting on a Boost. When the Boost ends, the timer goes back to its normal times by itself, so the schedule is not affected. If you find yourself boosting often, adjust the timer to heat according to your schedule.</p>
+<a class="top" href="#top">Back to contents</a>
+</section>
+
+<section aria-labelledby="switch-off">
+<h2 id="switch-off">The heater is on a scheduled time but you want to switch it off just this once</h2>
+<p>If the heater is already on during a scheduled time and you want it off, press BOOST once. It stays off until the next scheduled on time.</p>
+<a class="top" href="#top">Back to contents</a>
+</section>
+
+<section aria-labelledby="away">
+<h2 id="away">Going away</h2>
+<p>Open the front panel and press OFF/ON once. The display shows <b>OFF</b>, and the heater will not come on at its scheduled times. Your saved times are kept.</p>
+<p>When you get back, press OFF/ON again and the normal display returns. If you need hot water while the timer is paused, BOOST still works.</p>
+<a class="top" href="#top">Back to contents</a>
+</section>
+
+<section aria-labelledby="clocks">
+<h2 id="clocks">Changing the clocks for spring (forward) or winter (back)</h2>
+<p>The timer does not change for summer and winter time by itself, but <b>you do not need to set your times again</b>. One button moves the clock, and your on and off times move with it, so 6am still means 6am.</p>
+<ol class="plain">
+<li>On the <b>last Sunday in March</b> (clocks go forward) or the <b>last Sunday in October</b> (clocks go back), make sure the normal clock is showing.</li>
+<li>Press and <b>hold</b> BOOST until the clock moves by one hour.</li>
+<li>Check the clock is now right. If it moved the wrong way, press and hold BOOST again.</li>
+</ol>
+<p>A short press of BOOST starts a boost instead, and the display shows 0:30. If that happens, press BOOST three more times until it shows 0:00, then try again, holding it for longer.</p>
+<p>If the clock is wrong by some other amount, open the panel, then press and hold SET from the normal display. Use &minus; or + to correct whatever is flashing (day, then hours, then minutes), pressing SET after each, then press and hold SET to save.</p>
+<a class="top" href="#top">Back to contents</a>
+</section>
+
+<section aria-labelledby="problems">
+<h2 id="problems">Something's not working</h2>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">What you see</th><th scope="col">What to do</th></tr></thead>
+<tbody>
+<tr><td><b>L</b> appears when you press a button</td><td>The keypad is locked. Press and hold &minus; and + together for 5 seconds until <b>L</b> shows briefly, then try again.</td></tr>
+<tr><td><b>OFF</b> on the display</td><td>The timer is paused for a holiday. Press OFF/ON once.</td></tr>
+<tr><td>An error while entering times</td><td>A time is out of order. Press SET and enter that period again, making sure each period is later than the one before.</td></tr>
+<tr><td>No hot water at a set time</td><td>Check the clock and day are right, and that <b>OFF</b> is not showing. Then press BOOST twice so the display shows 1:00. If the water is still cold when the boost has finished, tell your landlord, as the heater may need looking at.</td></tr>
+<tr><td>SET never reaches <b>01 ON</b></td><td>Stop and tell your landlord. They can put it right.</td></tr>
+</tbody>
+</table></div>
+<a class="top" href="#top">Back to contents</a>
+</section>
+</main>
+</body>
+</html>
